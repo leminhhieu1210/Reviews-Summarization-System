@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Reviews Summarizer</title>
+
+	<link rel="icon" href="../static/styles/iconAI.png">
+	<link rel="stylesheet" href="../static/styles/main.css">
+	<link rel="stylesheet" href="../static/styles/nav.css">
+	<link rel="stylesheet" href="../static/styles/fa/css/all.min.css">
+</head>
+
+<body>
+	<div class="nav">
+		<div class="main-nav">
+			<a href="http://127.0.0.1:5000/"><img src="../static/styles/NLPicon1.png" alt=""></a>
+
+			<ul>
+				<li>
+					<a href="http://127.0.0.1:5000/"> HOME </a>
+				</li>
+				<li>
+					<a href="#"> INTRODUCE </a>
+				</li>
+				<li>
+					<a href="#"> EXAMPLES </a>
+					<ul class="sub-menu">
+						<li><a href="#" id="ex1"> Sample 1 </a></li>
+						<li><a href="#" id="ex2"> Sample 2 </a></li>
+						<li><a href="#" id="ex3"> Sample 3 </a></li>
+					</ul>
+				</li>
+				<li>
+					<a href="#"> CONTACT </a>
+				</li>
+				<li>
+					<a href="#"> HELP </a>
+				</li>
+			</ul>
+		</div>
+	</div>
+
+	<center><h1>Reviews summarizer using deep learning</h1></center>
+
+	<div class="wrapper">
+		<div class="form-wrapper">
+			<form method="POST", action="{{url_for('predict')}}">
+				<textarea name="textOrg" id="textOrg" placeholder="Enter your reviews..." spellcheck="false" rows="10">{{ original_text }}</textarea>
+
+				<span class="clear">
+					<i class="fa fa-trash" id="trash" style="color: #c3c2c2;"></i>
+				</span>
+
+				<span class="speech">
+					<i class="fa fa-microphone" id="mic" style="color: #c3c2c2;"></i>
+				</span>
+
+				<button type="submit" value="" id="btnSub">
+					<i class="fa fa-angle-double-right"></i>
+				</button>
+			</form>
+		</div>
+
+		<div>
+			<textarea name="textPredict" id="textPredict" placeholder="Reviews are summarized..." spellcheck="false" rows="10">{{ prediction_text }}</textarea>
+		</div>
+	</div>
+
+	<div id="google_translate_element" style="margin-top: 35px; margin-left: 34px;"></div>
+    <div id="btnTran" style="margin-left: 34px; cursor: pointer;">
+	    <button id="btnTran1" style="cursor: pointer;">1</button>
+    	<button id="btnTran2" style="cursor: pointer;">2</button>
+    </div>
+	<div id="txtTranslated" style="opacity: 0"></div>
+
+
+	<script src="../static/js/translate.txt"></script>
+	<script type="text/javascript">
+	    const txtTranslated = document.querySelector("#txtTranslated");
+	    const btn = document.querySelector("#btnTran1");
+	    btn.addEventListener("click",()=>{
+	      txtTranslated.innerHTML = document.querySelector("#textOrg").value;
+	    })
+
+	     function googleTranslateElementInit() {
+	         new google.translate.TranslateElement({
+	             includedLanguages: 'en',
+	             autoDisplay: false,
+	             layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+	         }, 'google_translate_element');
+
+	      }
+
+
+	    const btn2 = document.querySelector("#btnTran2");
+	    btn2.addEventListener("click",()=>{
+	      document.querySelector("#textOrg").value = txtTranslated.innerText;
+	    })
+	</script>
+<!--	<script src="../static/js/main.js"></script>-->
+	<script>
+		const $ = document.querySelector.bind(document);
+
+		$('.clear').addEventListener('click', (e) => {
+			$("#textOrg").value = "";
+			$('#textPredict').value = ""
+		})
+
+		$('#ex1').addEventListener('click', (e) => {
+			$("#textOrg").value = "I started drinking the Thai Nguyen tea since I was twenty years old to help curb cravings. Since I liked it so well, I drink them all the time. It helps keep me happy all day, no matter how long.";
+			$('#textPredict').value = ""
+		})
+
+		$('#ex2').addEventListener('click', (e) => {
+			$("#textOrg").value = "My daughter loves these yogurt melts. Banana and mango are two of their favorite flavors. The yogurt Vinamilk melts themselves are a smaller size than the Moc Chau melts, which is nice for younger babies. These are tasty and organic. We've had a lot of success with all of the Vinamilk products for babies we've tried. Highly recommend.";
+			$('#textPredict').value = ""
+		})
+
+		$('#ex3').addEventListener('click', (e) => {
+			$("#textOrg").value = "My family has a dog. I call my dog is Cau Vang. Great dog food is shipped to my door monthly. My pet enjoyed the food from day one. Great amount of meat, fruit, and veggies!";
+			$('#textPredict').value = ""
+		})
+
+
+		window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+		const recognition = new SpeechRecognition();
+		// recognition.lang = "en-US";
+		recognition.lang = "vi-VN";
+		const content = document.querySelector("#textOrg");
+		recognition.interimResults = true;
+
+		recognition.continuous = false;
+
+		$(".speech").onclick = function (e) {
+		  e.preventDefault();
+		  content.value = "";
+		  recognition.start();
+		};
+
+
+		recognition.addEventListener("result", (e) => {
+			console.log(e)
+		  let tran = e.results[0][0].transcript;
+		  content.value = tran;
+		});
+
+		recognition.addEventListener("end", (e) => {
+		  recognition.stop();
+		});
+
+	</script>
+</body>
+</html>
